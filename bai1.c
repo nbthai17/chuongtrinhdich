@@ -18,15 +18,15 @@ node *createNode(char x[], int i)
     return new;
 } 
 
-void addAd(node *n, int i)
-{
-    int j = 0;
-    while(n -> a[j] != NULL)
-    {
-        j++;
-    }
-    n -> a[j] = i;
-}
+// void addAd(node *n, int i)
+// {
+//     int j = 0;
+//     while(n -> a[j] != NULL)
+//     {
+//         j++;
+//     }
+//     n -> a[j] = i;
+// }
 char ** readstopw(char *filename, int * size)
 {
     FILE *f = fopen(filename,"r");
@@ -44,31 +44,41 @@ char ** readstopw(char *filename, int * size)
 }
 
 char * process(char * s, int *b, int *t)
-{   printf("\nbefore: %s %d",s,*t);
-    // while(!isalpha(s[0])) // xu ly cac ki tu ko phai chu cai dung dau chuoi
-    // {
-    //     if(s[1] == NULL)break;
-    //     strcpy(s,s[1]);
-    // }
+{   
+    printf("\nbefore: %s %d",s,*b);
     int i;
-    int l = strlen(s);
-    for(i = 0; i < l; i++)
+    for(i = 0; i < strlen(s); i++)
     {
         if(isalpha(s[i]))break;
     }
-    if ( i < l)
+    if ( i < strlen(s))
     {
-        memmove(s, s + i, l - i+1);
+        memmove(s, s + i, strlen(s) - i+1);
     }
     else 
     {
+        if(s[strlen(s) -1] == '\n')
+        {
+            (*t) ++;
+        }
         return NULL;
     }
     if('A' <= s[0] && s[0] <= 'Z') // kiểm tra tên riêng và xử lý chữ hoa về chữ thường
     {
-        if(*b == 0) //b = 1 co dau cham, b = 0 ko co dau cham
+        if((*b) == 0) //b = 1 co dau cham, b = 0 ko co dau cham
         {
-            printf("\nb1 %s",s);
+            if(s[strlen(s) - 1] == '\n')
+            {
+                (*t) ++;
+                if(s[strlen(s) - 2] == '.' ||s[strlen(s) - 2] == '?')
+                {
+                    (*b) = 1;
+                }
+            }
+            if(s[strlen(s) - 1] == '.'|| s[strlen(s) - 1] == '?')
+            {
+                (*b) = 1;
+            }
             return NULL;
         }
         else
@@ -76,33 +86,35 @@ char * process(char * s, int *b, int *t)
             s[0] = s[0] + 32;
         }   
     }
-    l = strlen(s);
-    if(!isalpha(s[l - 1]))
+    if(!isalpha(s[strlen(s) - 1]))
     {
-        do
-        {   
-            if( s[l - 1] == '.' || s[l - 1] == '?') 
+        if(s[strlen(s) - 1] == '\n')
+        {
+            (*t) ++;
+            if(s[strlen(s) - 2] == '.' ||s[strlen(s) - 2] == '?')
             {
-                *b = 1;
+                (*b) = 1;
             }
-            if( s[strlen(s) - 1] == '\n')
-            {
-                *t ++; //t dong thu t
-            }
-            s[strlen(s) - 1] = NULL;
-        }while(!isalpha(s[strlen(s) - 1]));
-    } 
+        }
+        if(s[strlen(s) - 1] == '.'|| s[strlen(s) - 1] == '?')
+        {
+            (*b) = 1;
+        }
+    }
+    else
+    {
+        (*b) = 0;
+    }
     for(int i = 0; i < strlen(s); i++)
     {
         if(isupper(s[i]))
         {
             s[i] = tolower(s[i]);
         }
-        if(!isalnum(s[i]))
-        {
-            strcpy(s[i],s[i+1]);
-        }
+
     }
+    
+    printf("\n\n b: %d",*b);
     return s;
 }
 
@@ -147,9 +159,10 @@ void main()
 {
     int size;
     char **str = readstopw("stopw.txt", &size);
-    solve("vanban.txt",str,size);
-    // char s[] = "U.S";
-    // char *st = process(s,0,1);
-    // printf("\n%s",st);
+    // solve("vanban.txt",str,size);
+    char s[] = "adf.\n";
+    int a = 0,b = 0;
+    char *st = process(s,&a,&b);
+    printf("\n%s %d %d",st,a,b);
     // printf("\n%s",d);
 }
